@@ -1,0 +1,135 @@
+{
+	"name": "aggregate_or_new_branch",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Fact",
+						"type": "DatasetReference"
+					},
+					"name": "Fact"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "derived",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "Blobstorage_linkedservice",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "derived",
+						"type": "DatasetReference"
+					},
+					"name": "sink2",
+					"rejectedDataLinkedService": {
+						"referenceName": "Blobstorage_linkedservice",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "sort1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Customer ID} as string,",
+				"          Sales as string,",
+				"          Quantity as string,",
+				"          Discount as string,",
+				"          Profit as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> Fact",
+				"Fact select(mapColumn(",
+				"          {Order ID},",
+				"          {Customer ID},",
+				"          Quantity,",
+				"          Discount,",
+				"          TotalSales = Sales,",
+				"          Profit",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"Fact sort(asc(Quantity, false)) ~> sort1",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Order ID} as string,",
+				"          {Customer Name} as string,",
+				"          Segment as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Region as string,",
+				"          Category as string,",
+				"          {Sub-Category} as string,",
+				"          {Customer ID} as string,",
+				"          Sales as string,",
+				"          Quantity as string,",
+				"          Discount as string,",
+				"          Profit as string",
+				"     ),",
+				"     partitionFileNames:['sort data'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          {Order ID},",
+				"          {Customer ID},",
+				"          Sales,",
+				"          Quantity,",
+				"          Discount,",
+				"          Profit",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {Order ID} as string,",
+				"          {Customer Name} as string,",
+				"          Segment as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Region as string,",
+				"          Category as string,",
+				"          {Sub-Category} as string,",
+				"          {Customer ID} as string,",
+				"          Sales as string,",
+				"          Quantity as string,",
+				"          Discount as string,",
+				"          Profit as string",
+				"     ),",
+				"     partitionFileNames:['select output.csv'],",
+				"     dateFormat:'MM/dd/yyyy',",
+				"     timestampFormat:'MM/dd/yyyy HH:mm:ss',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          {Order ID},",
+				"          {Customer ID},",
+				"          Quantity,",
+				"          Discount,",
+				"          Sales = TotalSales,",
+				"          Profit",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink2"
+			]
+		}
+	}
+}

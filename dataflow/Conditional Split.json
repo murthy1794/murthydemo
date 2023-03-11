@@ -1,0 +1,182 @@
+{
+	"name": "Conditional Split",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dimension",
+						"type": "DatasetReference"
+					},
+					"name": "Dimension"
+				},
+				{
+					"dataset": {
+						"referenceName": "Fact",
+						"type": "DatasetReference"
+					},
+					"name": "Fact"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "homeoffice",
+						"type": "DatasetReference"
+					},
+					"name": "Homeofficesink",
+					"rejectedDataLinkedService": {
+						"referenceName": "Blobstorage_linkedservice",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "corporate",
+						"type": "DatasetReference"
+					},
+					"name": "corporatesink",
+					"rejectedDataLinkedService": {
+						"referenceName": "Blobstorage_linkedservice",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "conditionalsplitconcept",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "Blobstorage_linkedservice",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Customer Name} as string,",
+				"          Segment as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Region as string,",
+				"          Category as string,",
+				"          {Sub-Category} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Dimension",
+				"source(output(",
+				"          {Order ID} as string,",
+				"          {Customer ID} as string,",
+				"          Sales as string,",
+				"          Quantity as string,",
+				"          Discount as string,",
+				"          Profit as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Fact",
+				"join1 split(equals(Segment, 'Consumer'),",
+				"     equals(Segment, 'Home Office'),",
+				"     equals(Segment, 'Corporate'),",
+				"     disjoint: false,",
+				"     partitionBy('hash', 1)) ~> split1@(Consumer, HomeOffice, Corporate)",
+				"Dimension, Fact join(Dimension@{Order ID} == Fact@{Order ID},",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> join1",
+				"split1@HomeOffice sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Homeoffice.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          {Order ID} = split1@HomeOffice@{Order ID},",
+				"          {Customer Name},",
+				"          Segment,",
+				"          City,",
+				"          State,",
+				"          Region,",
+				"          Category,",
+				"          {Sub-Category},",
+				"          {Order ID} = split1@HomeOffice@{Order ID},",
+				"          {Customer ID},",
+				"          Sales,",
+				"          Quantity,",
+				"          Discount,",
+				"          Profit",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Homeofficesink",
+				"split1@Corporate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string,",
+				"          Column_8 as string,",
+				"          Column_9 as string,",
+				"          Column_10 as string,",
+				"          Column_11 as string,",
+				"          Column_12 as string,",
+				"          Column_13 as string",
+				"     ),",
+				"     partitionFileNames:['Corporate.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> corporatesink",
+				"split1@Consumer sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Column_1 as string,",
+				"          Column_2 as string,",
+				"          Column_3 as string,",
+				"          Column_4 as string,",
+				"          Column_5 as string,",
+				"          Column_6 as string,",
+				"          Column_7 as string,",
+				"          Column_8 as string,",
+				"          Column_9 as string,",
+				"          Column_10 as string,",
+				"          Column_11 as string",
+				"     ),",
+				"     partitionFileNames:['Consumer.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          {Order ID} = split1@Consumer@{Order ID},",
+				"          {Customer Name},",
+				"          Segment,",
+				"          City,",
+				"          State,",
+				"          Region,",
+				"          Category,",
+				"          {Sub-Category},",
+				"          {Order ID} = split1@Consumer@{Order ID},",
+				"          {Customer ID},",
+				"          Sales,",
+				"          Quantity,",
+				"          Discount,",
+				"          Profit",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

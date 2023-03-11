@@ -1,0 +1,23 @@
+{
+	"name": "inputsource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Blobstorage_linkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Input Datasets",
+				"container": "adfmurthy"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

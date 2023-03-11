@@ -1,0 +1,9 @@
+{
+	"name": "raghusridatafactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "326d9fe9-5f48-4757-96a1-0ae2d01d6f9f",
+		"tenantId": "188421e6-cfb5-4cc8-8d57-28c073ec450c"
+	}
+}

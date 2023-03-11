@@ -1,0 +1,20 @@
+{
+	"name": "wrangling data flow",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "Dimension",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Dimension",
+					"dataset": {
+						"referenceName": "Dimension",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared Dimension = let AdfDoc = AzureStorage.BlobContents(\"https://devmurthy.blob.core.windows.net/adfmurthy/Input Datasets/Dimension.xlsx\"), Excel = Excel.Workbook(AdfDoc),ExcelSheet = Excel{[Item=\"Dimension\",Kind=\"Sheet\"]}[Data], PromotedHeaders = Table.PromoteHeaders(ExcelSheet, [PromoteAllScalars = true]) in PromotedHeaders;\r\nshared UserQuery = let Source = #\"Dimension\",\r\n  #\"Reordered columns\" = Table.ReorderColumns(Source, {\"Order ID\", \"Customer Name\", \"Category\", \"Sub-Category\", \"Segment\", \"City\", \"State\", \"Region\"}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Reordered columns\", {\"Region\"}) in #\"Removed columns\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

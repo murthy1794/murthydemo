@@ -1,0 +1,56 @@
+{
+	"name": "Dimension",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Blobstorage_linkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Dimension",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Dimension.xlsx",
+				"folderPath": "Input Datasets",
+				"container": "adfmurthy"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Order ID",
+				"type": "String"
+			},
+			{
+				"name": "Customer Name",
+				"type": "String"
+			},
+			{
+				"name": "Segment",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "State",
+				"type": "String"
+			},
+			{
+				"name": "Region",
+				"type": "String"
+			},
+			{
+				"name": "Category",
+				"type": "String"
+			},
+			{
+				"name": "Sub-Category",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

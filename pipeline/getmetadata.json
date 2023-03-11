@@ -1,0 +1,296 @@
+{
+	"name": "getmetadata",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "metadata",
+						"value": "details"
+					}
+				],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Dimension",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "If Condition",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(pipeline().parameters.metadata)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Wait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 10
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 1
+											},
+											"sink": {
+												"name": "Column1",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 2
+											},
+											"sink": {
+												"name": "Column2",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 3
+											},
+											"sink": {
+												"name": "Column3",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 4
+											},
+											"sink": {
+												"name": "Column4",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 5
+											},
+											"sink": {
+												"name": "Column5",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 6
+											},
+											"sink": {
+												"name": "Column6",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 7
+											},
+											"sink": {
+												"name": "Column7",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 8
+											},
+											"sink": {
+												"name": "Column8",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 9
+											},
+											"sink": {
+												"name": "Column9",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 10
+											},
+											"sink": {
+												"name": "Column10",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 11
+											},
+											"sink": {
+												"name": "Column11",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 12
+											},
+											"sink": {
+												"name": "Column12",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 13
+											},
+											"sink": {
+												"name": "Column13",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "corporate",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "outputcopyif",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"metadata": {
+				"type": "string",
+				"defaultValue": "true"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-22T10:24:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
